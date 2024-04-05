@@ -4,6 +4,7 @@
 #include "PWMTimer.h"
 #include "Button.h"
 #include "Led.h"
+#include "Rcc.h"
 #include <memory>
 #include <functional>
 
@@ -18,11 +19,11 @@ public:
     void onTimerElapsed();
     App();
 private:
-    void initRcc(uint8_t mhz);
     static std::shared_ptr<App> s_instance;
     PWMTimer m_timer;
     Button m_button = Button(1);
     Led m_led_1_5 = Led(0);
     Led m_led_6_10 = Led(2);
     Button m_button2 = Button(3);
+    Rcc m_rcc;
 };
