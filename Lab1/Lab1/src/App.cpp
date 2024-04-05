@@ -30,8 +30,7 @@ void App::initRcc(uint8_t mhz){
         pll_multiplier = 2;
         //ahb_prescaler = 8/mhz;
         ahb_prescaler_value = mhz == 2? 0x00000090U : 0x000000A0U;
-    }
-    if (mhz%4 == 0){
+    } else if (mhz%4 == 0){
         pll_multiplier = mhz/4;
         //ahb_prescaler = 1;
         ahb_prescaler_value = 0x00000000U;
