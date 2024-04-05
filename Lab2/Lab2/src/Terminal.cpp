@@ -1,18 +1,26 @@
 #include "Terminal.h"
 
-void Terminal::setup(uint8_t hclk){
-    RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
-    USART1-> BRR = hclk*1000000 / 9600;
-    USART1->CR1 |= (USART_CR1_UE | USART_CR1_TE | USART_CR1_RE | USART_CR1_RXNEIE);
+void Terminal::setup(uint8_t hclk, bool is_rw){
+    if (is_rw){
+        m_USART = USART2;
+        RCC->APB1ENR |= RCC_APB1ENR_USART2EN;
 
-    NVIC_EnableIRQ(USART1_IRQn);
+        m_USART->CR1 |= (USART_CR1_TE | USART_CR1_RE | USART_CR1_RXNEIE);
+        NVIC_EnableIRQ(USART2_IRQn);
+    }
+    else{
+        m_USART = USART1;
+        RCC->APB2ENR |= RCC_APB2ENR_USART1EN;
+    }
+    m_USART->BRR = hclk*1000000 / 9600;
+    m_USART->CR1 |= USART_CR1_UE;
 }
 
 void Terminal::sendMsg(std::string msg){
     for (char c : msg){
-        while ((USART1->SR & USART_SR_TC) == 0) { }
+        while ((m_USART->SR & USART_SR_TC) == 0) { }
 
-        USART1->DR = c;
+        m_USART->DR = c;
     }
 }
 
@@ -22,7 +30,7 @@ void Terminal::receiveChar(char s) {
         m_receiveCmd = true;
         m_tempCmd = "";
     }
-    else{
+    else if (!(m_tempCmd == "" && s == ' ')) {
         m_tempCmd.push_back(s);
     }
 }

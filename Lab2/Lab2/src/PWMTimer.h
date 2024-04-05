@@ -6,9 +6,11 @@
 // extern "C" void TIM1_UP_IRQHandler();
 
 class PWMTimer{
-    public:
+public:
     PWMTimer(uint8_t mhz, uint8_t ticks_per_second);
     PWMTimer();
     void run();
     void stop();
+    void changeTimerInterval(double sec);
+    void changePWM_CCR(double sec);
 };

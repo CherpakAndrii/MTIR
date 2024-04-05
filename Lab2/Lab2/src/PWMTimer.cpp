@@ -30,3 +30,9 @@ void PWMTimer::run(){
 void PWMTimer::stop(){
     TIM1->CR1 &= ~TIM_CR1_CEN;              // Встановлюємо біт Counter ENable у реєстрі CR1 у низький логічний рівень
 }
+void PWMTimer::changeTimerInterval(double sec){
+    TIM1->ARR = (uint32_t)(sec*1000) - 1;
+}
+void PWMTimer::changePWM_CCR(double sec){
+    TIM1->CCR1 = (uint32_t)(sec*1000) - 1;
+}

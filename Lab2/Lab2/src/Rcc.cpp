@@ -56,5 +56,4 @@ void Rcc::delay(int ms){
     auto value = TickCount;
 
     while ((TickCount - value) < ms) { }
-    
 }

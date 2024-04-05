@@ -1,4 +1,5 @@
 #include "App.h"
+#include "command_methods.h"
 
 std::shared_ptr<App> App::s_instance = nullptr;
 
@@ -12,7 +13,9 @@ std::shared_ptr<App> App::instance(){
 App::App(){
     m_rcc.setup(HCLK);
     m_rcc.initClock(HCLK);
-    m_terminal.setup(HCLK);
+    m_adc.setup();
+    m_terminalW.setup(HCLK, false);
+    m_terminalRW.setup(HCLK, true);
 }
 
 void App::run(){
@@ -20,26 +23,46 @@ void App::run(){
 
     while (true)
     {
-        m_led.toggle();
-        if (m_terminal.hasNewCommand()){
-            m_terminal.sendMsg("You sent " + m_terminal.getCommand() + "\r\n");
-            m_terminal.clearCommand();
+        if (m_led_is_active) m_led.toggle();
+        if (m_terminalRW.hasNewCommand()){
+            std::string command = m_terminalRW.getCommand();
+            if (command == "ON") {
+                m_led_is_active = true;
+                m_terminalRW.sendMsg("Led swithed on!\r\n");
+            } else if (command == "OFF") {
+                m_led_is_active = false;
+                m_led.off();
+                m_terminalRW.sendMsg("Led swithed off!\r\n");
+            } else if (is_SETTIM(command)) {
+                double secs = get_SETTIM_param(command);
+                m_timer.changeTimerInterval(secs);
+                m_terminalRW.sendMsg("Timer interval changed to " + std::to_string(secs) + "seconds \r\n");
+            } else if (is_SETPWM(command)) {
+                double secs = get_SETPWM_param(command);
+                m_timer.changePWM_CCR(secs);
+                m_terminalRW.sendMsg("PWM offset changed to " + std::to_string(secs) + "seconds \r\n");
+            } else{
+                m_terminalRW.sendMsg("Command \"" + command + "\" doesn't exist!\r\n");
+            }
+            m_terminalRW.clearCommand();
         }
-        
+        m_terminalW.sendMsg("adc = " + std::to_string(m_adc.getValue()) + "\r\n");
         m_rcc.delay(1000);
     }
 }
 
-extern "C" void USART1_IRQHandler(){
-    App::instance()->receiveChar(USART1->DR);
-    USART1->SR &= ~USART_SR_RXNE;
+extern "C" void USART2_IRQHandler(){
+    App::instance()->receiveChar(USART2->DR);
+    USART2->SR &= ~USART_SR_RXNE;
 }
 
 void App::onTimerElapsed(){
-    m_led.toggle();
+    if (m_led_is_active){
+        m_led.toggle();
+    }
 }
 
 
 void App::receiveChar(char s) {
-    m_terminal.receiveChar(s);
+    m_terminalRW.receiveChar(s);
 }
