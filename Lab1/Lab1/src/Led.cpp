@@ -3,7 +3,7 @@
 Led::Led(uint8_t pin){
     m_pin = pin;
     RCC->APB2ENR |= RCC_APB2ENR_IOPAEN;                         // Вмикаємо ТЧ для порту А
-    GPIOA->CRL |= /*GPIO_CRL_MODE0_0*/ (0x1UL << (m_pin*4));    // Налаштовуємо пін m_pin на порту A як вихідний зі швидкістю 10 МГц
+    GPIOA->CRL |= /*GPIO_CRL_MODE0_0;*/ (0x1UL << (m_pin*4));    // Налаштовуємо пін m_pin на порту A як вихідний зі швидкістю 10 МГц
 }
 
 void Led::on(){

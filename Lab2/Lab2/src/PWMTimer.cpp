@@ -1,8 +1,6 @@
 #include "PWMTimer.h"
 #include "App.h"
 
-PWMTimer::PWMTimer() : PWMTimer::PWMTimer(HCLK, TICKS_PER_SECOND) {  }
-
 PWMTimer::PWMTimer(uint8_t mhz, uint8_t ticks_per_second){
     RCC->APB2ENR |= RCC_APB2ENR_IOPAEN;             // Вмикаємо тактову частоту для порту A, щоб можна було використовувати GPIO
 
@@ -31,8 +29,14 @@ void PWMTimer::stop(){
     TIM1->CR1 &= ~TIM_CR1_CEN;              // Встановлюємо біт Counter ENable у реєстрі CR1 у низький логічний рівень
 }
 void PWMTimer::changeTimerInterval(double sec){
-    TIM1->ARR = (uint32_t)(sec*1000) - 1;
+    TIM1->CR1 &= ~TIM_CR1_CEN;
+    TIM1->CNT = 0;
+    TIM1->ARR = (uint32_t)(1000 * sec) - 1;
+    TIM1->CR1 |= TIM_CR1_CEN;
 }
 void PWMTimer::changePWM_CCR(double sec){
+    TIM1->CR1 &= ~TIM_CR1_CEN;
+    TIM1->CNT = 0;
     TIM1->CCR1 = (uint32_t)(sec*1000) - 1;
+    TIM1->CR1 |= TIM_CR1_CEN;
 }

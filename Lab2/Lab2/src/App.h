@@ -5,6 +5,7 @@
 #include "Rcc.h"
 #include "Adc.h"
 #include "Terminal.h"
+#include "command_methods.h"
 #include <memory>
 
 #define HCLK 8
@@ -24,12 +25,13 @@ private:
 private:
     volatile bool m_led_is_active = true;
 private:
-    PWMTimer m_timer;
+    PWMTimer m_timer = PWMTimer(HCLK, TICKS_PER_SECOND);
     Led m_led = Led(1);
     Rcc m_rcc;
     Terminal m_terminalW;
     Terminal m_terminalRW;
     Adc m_adc;
+    Commands n_commands;
 private:
     void receiveChar(char s);
 };

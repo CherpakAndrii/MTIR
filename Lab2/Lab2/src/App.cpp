@@ -33,14 +33,19 @@ void App::run(){
                 m_led_is_active = false;
                 m_led.off();
                 m_terminalRW.sendMsg("Led swithed off!\r\n");
-            } else if (is_SETTIM(command)) {
-                double secs = get_SETTIM_param(command);
+            } else if (n_commands.is_SETTIM(command)) {
+                double secs = n_commands.get_SETTIM_param(command);
                 m_timer.changeTimerInterval(secs);
-                m_terminalRW.sendMsg("Timer interval changed to " + std::to_string(secs) + "seconds \r\n");
-            } else if (is_SETPWM(command)) {
-                double secs = get_SETPWM_param(command);
+                std::string ssecs = n_commands.double_to_str(secs, 3);
+                m_terminalRW.sendMsg("Timer interval changed to " + ssecs + " seconds \r\n");
+            } else if (n_commands.is_SETPWM(command)) {
+                // m_terminalRW.sendMsg("OK \r\n");
+                double secs = n_commands.get_SETPWM_param(command);
+                // m_terminalRW.sendMsg("PARSED \r\n");
                 m_timer.changePWM_CCR(secs);
-                m_terminalRW.sendMsg("PWM offset changed to " + std::to_string(secs) + "seconds \r\n");
+                std::string ssecs = n_commands.double_to_str(secs, 3);
+                // m_terminalRW.sendMsg("CONVERTED \r\n");
+                m_terminalRW.sendMsg("PWM offset changed to " + ssecs + " seconds \r\n");
             } else{
                 m_terminalRW.sendMsg("Command \"" + command + "\" doesn't exist!\r\n");
             }

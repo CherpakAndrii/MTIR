@@ -8,7 +8,6 @@
 class PWMTimer{
 public:
     PWMTimer(uint8_t mhz, uint8_t ticks_per_second);
-    PWMTimer();
     void run();
     void stop();
     void changeTimerInterval(double sec);
